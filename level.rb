@@ -43,14 +43,14 @@ class Level
     row = Array.new
     map.each_char{ |c|
       if c == 'x'
-        row.push Tile.new(tile_x, tile_y, index, T::Floor, @@tile_sprites)
+        row << Tile.new(tile_x, tile_y, index, T::Floor, @@tile_sprites)
       elsif c == 'o'
-        row.push Tile.new(tile_x, tile_y, index, T::Air, @@tile_sprites)
+        row << Tile.new(tile_x, tile_y, index, T::Air, @@tile_sprites)
       end
       index += 1
       tile_x += 1
       if index % $level_width == 0
-        $grid.push row
+        $grid << row
         row = Array.new
         index = 0
         tile_x = 0
