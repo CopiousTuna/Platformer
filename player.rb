@@ -44,6 +44,7 @@ class Player
 		@jump_released = true
 	end
 
+  # TODO: Increse jump height and smoothe out the fall for jumps that do not reach the apex
 	def fall
 		# If the player is jumping
 		if @jumping == true
@@ -58,20 +59,16 @@ class Player
 				@draw_y -= jump_dist
 				@y_offset += jump_dist
 				update_position
+				
 				# Check if the player hit a ceiling
+				# TODO: Make jumps that collide with ceiling tiles less derpy
 				if @rect.y1 > 0
-					solids_rect_left = $grid[@y][@x].is_solid? ?
-						$grid[@y][@x].rect : nil
-
-					solids_rect_right = @x < $level_width - 1 && $grid[@y][@x + 1].is_solid? ?
-						$grid[@y][@x + 1].rect : nil
-						
-					while (solids_rect_left != nil && @rect.intersects?(solids_rect_left)) ||
-						(solids_rect_right != nil && @rect.intersects?(solids_rect_right))	
-						@draw_y += 1
-						@jumping = false
-						update_position
-					end
+				  while $grid[@rect.y1 / 32][@rect.x1 / 32].is_solid? ||
+            $grid[@rect.y1 / 32][@rect.x2 / 32].is_solid?
+           @draw_y += 1
+           @jumping = false
+           update_position
+          end
 				else
 					stop_jump
 				end
@@ -88,24 +85,15 @@ class Player
 			update_position
 			
 			# Check collision with floor
-			# First check to make sure player isn't referencing tiles below from bottom row
 			if @y < $level_height - 1
-				solids_rect_left = @x < $level_width - 1 && 
-          $grid[@y + 1][@x].is_solid? ? $grid[@y + 1][@x].rect : nil
-				
-				solids_rect_right = @x < $level_width - 1 && 
-				  $grid[@y + 1][@x + 1].is_solid? ? $grid[@y + 1][@x + 1].rect : nil
-				
-				landed = false
-				
-				while (solids_rect_left != nil && @rect.intersects?(solids_rect_left)) || 
-					(solids_rect_right != nil && @rect.intersects?(solids_rect_right))
-					@draw_y -= 1
-					@y_offset = -1	# Indicate that player is grounded
-					landed = true
-					update_position
-				end
-				
+			  while $grid[@rect.y2 / 32][@rect.x1 / 32].is_solid? ||
+			    $grid[@rect.y2 / 32][@rect.x2 / 32].is_solid?
+           @draw_y -= 1
+           @y_offset = -1  # Indicate that player is grounded
+           landed = true
+           update_position
+        end
+
 				# Keeps player from floating 1px above the ground
 				if landed
 					@draw_y += 1
@@ -122,23 +110,18 @@ class Player
 		if @rect.x1 > 0
 			@draw_x -= 3
 			update_position
-			solids_rect_top = $grid[@y][@x].is_solid? ?
-				$grid[@y][@x].rect : nil
-				
-			solids_rect_bottom = @draw_y % 32 != 0 && @y < $level_height - 1 &&
-				$grid[@y + 1][@x].is_solid? ? $grid[@y + 1][@x].rect : nil
-				
-			while (solids_rect_top != nil && @rect.intersects?(solids_rect_top)) ||
-				(solids_rect_bottom != nil && @rect.intersects?(solids_rect_bottom))
-					@draw_x += 1
-					update_position
-			end
+			while $grid[@rect.y1 / 32][@rect.x1 / 32].is_solid? ||
+			  $grid[(@rect.y2 - 1) / 32][@rect.x1 / 32].is_solid?
+			   @draw_x += 1
+         update_position
+      end
 		end
+		
 		if update_frame
 			if @frame == 0
 				@frame = @step ? 2 : 1
 				@step = !@step
-			elsif @jumping
+			elsif @y_offset != -1  # Player is airborne
 				@frame = 1
 			else
 				@frame = 0
@@ -150,26 +133,18 @@ class Player
 		if @rect.x2 < $level_width * 32
 			@draw_x += 3
 			update_position
-			# First check that adjacent tile is not on the next row of the level
-			if @x < $level_width - 1
-				solids_rect_top = $grid[@y][@x + 1].is_solid? ? 
-					$grid[@y][@x + 1].rect : nil
-				
-				solids_rect_bottom = @draw_y % 32 != 0 && @y < $level_height - 1 &&
-					$grid[@y + 1][@x + 1].is_solid? ? $grid[@y + 1][@x + 1].rect : nil
-					
-				while(solids_rect_top != nil && @rect.intersects?(solids_rect_top)) ||
-					(solids_rect_bottom != nil && @rect.intersects?(solids_rect_bottom))
-						@draw_x -= 1
-						update_position
-				end
-			end
+			while $grid[@rect.y1 / 32][@rect.x2 / 32].is_solid? ||
+        $grid[(@rect.y2 - 1) / 32][@rect.x2 / 32].is_solid?
+         @draw_x -= 1
+         update_position
+      end
 		end
+		
 		if update_frame
 			if @frame == 3
 				@frame = @step ? 5 : 4
 				@step = !@step
-			elsif @jumping
+			elsif @y_offset != -1  # Player is airborne
 				@frame = 4
 			else
 				@frame = 3

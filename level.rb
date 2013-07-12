@@ -1,6 +1,6 @@
 class Tile
 
-  attr_reader :solid, :rect, :x, :y
+  attr_reader :solid, :x, :y
 
   def initialize(x, y, index, type, sprites)
     @@sprites ||= sprites
@@ -8,7 +8,6 @@ class Tile
     @y = y * 32
     @type = type
     @solid = type == 1 ? true : false
-    @rect = Rect.new(@x, @y, 32, 32)
   end
   
   # Tile checks surrounding tiles and finds its proper image
