@@ -41,7 +41,7 @@ class Level
     tile_x = tile_y = index = 0
     row = Array.new
     map.each_char{ |c|
-      if c == 'x'
+      if c == 'x' || c == '/' || c == '\\'
         row << Tile.new(tile_x, tile_y, index, T::Floor, @@tile_sprites)
       elsif c == 'o'
         row << Tile.new(tile_x, tile_y, index, T::Air, @@tile_sprites)
