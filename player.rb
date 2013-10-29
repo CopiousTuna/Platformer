@@ -40,11 +40,13 @@ class Player
 	end
 	
 	def stop_jump
-		@jumping = false
-		@jump_released = true
+	  if @jumping
+  		@jumping = false  		
+  		@jump_vel = 0
+  	end
 	end
 
-  # TODO: Increse jump height and smoothe out the fall for jumps that do not reach the apex
+  # TODO: Increse jump height
 	def fall
 		# If the player is jumping
 		if @jumping == true
@@ -66,7 +68,7 @@ class Player
 				  while $grid[@rect.y1 / 32][@rect.x1 / 32].is_solid? ||
             $grid[@rect.y1 / 32][@rect.x2 / 32].is_solid?
            @draw_y += 1
-           @jumping = false
+           stop_jump
            update_position
           end
 				else
@@ -156,6 +158,10 @@ class Player
 		if @y_offset == -1	# If the player is not airborne
 			@frame = @frame < 3 ? 0 : 3
 		end
+	end
+	
+	def release_jump
+	  @jump_released = true
 	end
 	
 	def draw

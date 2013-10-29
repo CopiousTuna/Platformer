@@ -49,7 +49,7 @@ class Window < Gosu::Window
 		@font = Gosu::Font.new(self, Gosu::default_font_name, 16)
 	#	@level = Level.new(38, 15, $map, self) # Map 1
 	  @level = Level.new(53, 37, $first_cave, self)  # First cave
-		@player = Player.new(36, 7, self)
+		@player = Player.new(36, 6, self)
 		@level.set_camera(@player.draw_x, @player.draw_y)
 	end
 	
@@ -76,9 +76,9 @@ class Window < Gosu::Window
 		end
 		@player.draw
 		# Frame rate
-    # @font.draw(Gosu::fps(), 5, 205, Z::UI, 1.0, 1.0, 0xffffffff)
+    # @font.draw(Gosu::fps(), 5, 460, Z::UI, 1.0, 1.0, 0xffffffff)
 		# Player position
-		# @font.draw("(" + (@player.x / 32).to_s + ", " + (@player.y / 32).to_s + ")", 270, 205, Z::UI, 1.0, 1.0, 0xffffffff)
+		# @font.draw("(" + (@player.draw_x / 32).to_s + ", " + (@player.draw_y / 32).to_s + ")", 585, 460, Z::UI, 1.0, 1.0, 0xffffffff)
 	end
 	
 	def button_down(id)
@@ -90,6 +90,7 @@ class Window < Gosu::Window
 	def button_up(id)
 		if id == Gosu::KbZ
 			@player.stop_jump
+			@player.release_jump
 		end
 	end
 	
